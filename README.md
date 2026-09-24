@@ -13,7 +13,7 @@ Built from `Nigerian_Address_Geocoder_Blueprint.docx`. This implementation repla
 - [x] Optional Overture GeoJSON import
 - [x] Nigerian shorthand, rule parser, fuzzy matching and conservative ranking
 - [x] FastAPI endpoints, validation and basic abuse protection
-- [x] Responsive React/Leaflet interface, candidates and movable confirmation pin
+- [x] Responsive React/Google Maps interface, candidates and movable confirmation pin
 - [x] Fictional sample data, benchmark runner and consent boundary
 - [x] Parser, matcher, coordinates, API and desktop/mobile browser tests
 - [x] Local complete-flow verification and production frontend build
@@ -71,7 +71,7 @@ Choose a candidate, **drag the green pin or edit its coordinates**, check storag
 
 ```mermaid
 flowchart TD
-    User[Landmark-style address] --> UI[React + Leaflet]
+    User[Landmark-style address] --> UI[React + Google Maps JS]
     UI -->|POST /geocode| API[FastAPI]
     API --> N[Normalize shorthand and punctuation]
     N --> P[Rule parser + area aliases]
@@ -234,6 +234,39 @@ Supply a Lagos-trimmed **GeoJSON FeatureCollection** of Points with `id`, `names
 
 Import only public place data. Retain OSM/ODbL attribution and the chosen Overture release's licenses and attribution. See `data/README.md`.
 
+## Google Maps setup
+
+LocateAm uses the Google Maps JavaScript API via `@vis.gl/react-google-maps` to render high-resolution satellite imagery (`hybrid` mode with standard `roadmap` toggle) so users can clearly identify landmarks, compounds, and gates. All geocoding and candidate search logic remains entirely on LocateAm's own backend; Google is only used for browser map tiles.
+
+### 1. Create an API key in Google Cloud Console
+1. Go to the [Google Cloud Console](https://console.cloud.google.com/).
+2. Create or select a project.
+3. Enable the **Maps JavaScript API** from the API Library.
+   > [!IMPORTANT]
+   > Enable **Maps JavaScript API** only. Do **not** enable the Geocoding API, Places API, or Directions API. LocateAm handles all address resolution internally.
+4. Go to **Credentials** and click **Create Credentials → API Key**.
+
+### 2. Apply security restrictions
+Protect your API key against unauthorized quota usage:
+- **Application restriction**: Choose **Websites (HTTP referrers)** and add:
+  - `http://localhost:5173/*` (for local development)
+  - `https://locate-am.vercel.app/*` (for production deployment, or your custom domain)
+- **API restriction**: Under **Restrict key**, select **Maps JavaScript API** only.
+
+### 3. Configure the environment variable
+- **Local development**: Add to `web/.env` or `.env` in the project root:
+  ```dotenv
+  VITE_GOOGLE_MAPS_API_KEY=AIzaSy...your-key-here
+  ```
+- **Vercel deployment**:
+  1. Open your project on the [Vercel Dashboard](https://vercel.com).
+  2. Navigate to **Settings → Environment Variables**.
+  3. Add `VITE_GOOGLE_MAPS_API_KEY` with your restricted key.
+  > [!NOTE]
+  > Vite bakes `VITE_*` environment variables into the client JavaScript bundle at **build time**. After adding or changing this variable in Vercel, you must trigger a new deployment or redeploy without cache for the changes to take effect.
+
+If `VITE_GOOGLE_MAPS_API_KEY` is not provided, LocateAm gracefully degrades: candidate lists, manual coordinate entry, and pin confirmation remain fully functional without crashing.
+
 ## API contract
 
 ### `POST /geocode`
@@ -311,6 +344,7 @@ Errors: **400** invalid token/candidate/consent; **409** duplicate confirmation;
 | `SIGNING_SECRET` | Ephemeral in demo | Required persistent random key in Postgres |
 | `CORS_ORIGINS` | Localhost origins | JSON array of allowed frontend origins |
 | `VITE_API_URL` | `/api` | Vite proxies locally; optional API base override |
+| `VITE_GOOGLE_MAPS_API_KEY` | *(empty)* | Optional Google Maps JS API key for satellite map rendering |
 
 Restart the API after environment changes. Thresholds must lie between 0 and 1. There is no confidence calibration.
 
