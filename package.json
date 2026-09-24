@@ -1,0 +1,27 @@
+{
+  "name": "locateam",
+  "version": "1.0.0",
+  "description": "**A Lagos-first MVP for landmark-style addresses, ranked map references, and a human-confirmed destination pin.**",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/adeyanjufuhad/locateam-geocoder.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/adeyanjufuhad/locateam-geocoder/issues"
+  },
+  "homepage": "https://github.com/adeyanjufuhad/locateam-geocoder#readme",
+  "dependencies": {
+    "@neon/config": "^1.7.3",
+    "@neon/env": "^1.4.4"
+  }
+}

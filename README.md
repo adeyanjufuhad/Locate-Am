@@ -376,6 +376,47 @@ web/                   React, Leaflet, Vite and browser tests
 .github/workflows/     Verification pipeline
 ```
 
+## Neon Postgres & Functions Setup
+
+LocateAm supports [Neon](https://neon.tech) for hosting the production database with PostGIS and pg_trgm extensions, as well as Neon Functions.
+
+### 1. Database Connection (Neon Postgres)
+Neon supports both `postgis` and `pg_trgm` extensions out of the box.
+
+1. In your Neon Console (project `blue-waterfall-51134101`), copy your Postgres connection string (retaining `?sslmode=require`).
+2. Add it to your local `.env`:
+   ```bash
+   DATA_MODE=postgres
+   DATABASE_URL=postgresql://user:pass@ep-...neon.tech/neondb?sslmode=require
+   SIGNING_SECRET=<generate: python -c "import secrets; print(secrets.token_hex(32))">
+   ```
+3. Run the migrations and import the Ikeja OSM dataset into Neon:
+   ```powershell
+   .\.venv\Scripts\python -m scripts.migrate
+   .\.venv\Scripts\python -m scripts.import_places data/downloads/ikeja-osm.json --source osm --dataset-version 2026-09-24
+   ```
+
+### 2. Neon CLI & Functions Deployment
+Neon Functions and project policy are managed via `neon.ts` and `hello.ts`:
+
+1. Authenticate with Neon:
+   - Interactive terminal:
+     ```powershell
+     neon login
+     ```
+   - Or non-interactive / API key:
+     ```powershell
+     $env:NEON_API_KEY="your-api-key"
+     ```
+2. Link the project and branch:
+   ```powershell
+   neon link --project-id blue-waterfall-51134101 --branch production -y
+   ```
+3. Deploy the function and configuration:
+   ```powershell
+   neon deploy
+   ```
+
 ## What you must supply for real use
 
 1. Postgres/PostGIS connection and extension permissions; migrate and import.
