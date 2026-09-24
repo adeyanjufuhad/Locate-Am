@@ -14,3 +14,4 @@ reports/local/
 *.docx
 playwright-report/
 test-results/
+.env.local

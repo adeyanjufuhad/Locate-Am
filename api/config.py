@@ -6,7 +6,7 @@ import secrets
 
 
 class Settings(BaseSettings):
-    model_config = SettingsConfigDict(env_file='.env', extra='ignore')
+    model_config = SettingsConfigDict(env_file=('.env', '.env.local'), extra='ignore')
     data_mode: Literal['demo', 'postgres'] = 'demo'
     database_url: str = 'postgresql://locateam:locateam@localhost:5432/locateam'
     demo_db: str = 'data/private/demo.db'
