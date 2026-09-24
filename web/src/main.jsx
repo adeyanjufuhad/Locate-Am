@@ -160,7 +160,7 @@ function App() {
                 type="button"
                 className="example-chip"
                 disabled={busy || sending}
-                onClick={(e) => handleSearch(e, 'A landmark with two possible locations')}
+                onClick={(e) => handleSearch(e, 'Demo Unity Filling Station')}
               >
                 A landmark with two possible locations ↗
               </button>
