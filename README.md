@@ -25,7 +25,7 @@ Built from `Nigerian_Address_Geocoder_Blueprint.docx`. This implementation repla
 
 The default is a working **offline fixture demo**: six fictional landmarks and a SQLite confirmation queue. It needs no database credentials or geocoding keys. Fixture coordinates are invented, not verified destinations. Internet is needed for basemap tiles; if tiles fail, candidates and coordinate inputs still work.
 
-The Postgres adapter uses PostGIS and pg_trgm, with an integration test and a GitHub Actions PostGIS service. This build machine has no PostgreSQL/PostGIS server, so that test is skipped locally. A passing fixture demo does not prove production database performance.
+The Postgres adapter uses PostGIS and pg_trgm. Its integration test passed in the [GitHub Actions PostGIS service](https://github.com/adeyanjufuhad/locateam-geocoder/actions/runs/35995764067). This build machine has no PostgreSQL/PostGIS server, so that test is skipped locally. Passing integration tests does not establish production database performance or geographic accuracy.
 
 **Real-world accuracy is unmeasured.** The six-row synthetic benchmark tests evaluation plumbing only. No private home addresses, exact home pins, source snapshots, credentials, or user submissions are committed.
 
@@ -358,7 +358,7 @@ Remove-Item Env:TEST_DATABASE_URL
 
 The integration test migrates twice, imports duplicate fixtures, repeats import, searches with the wrong area, confirms a pin and checks PostGIS coordinates/status. It leaves fixture rows in that disposable DB. GitHub Actions supplies a fresh PostGIS service and runs Python tests, frontend build, browser tests and synthetic benchmark on pushes/PRs. No private address data enters CI.
 
-Local verification: backend tests passed with the PostGIS test skipped for lack of a server; production frontend build passed; desktop/mobile browser flows passed; synthetic benchmark ran; search → inspect → adjust → submit was also verified manually in the in-app browser. These checks do not establish real address accuracy.
+Verification: **20 backend tests passed locally**, with one PostGIS test skipped for lack of a local server. **All 21 backend tests, including PostGIS migration/import/dedupe/search/confirmation, passed in GitHub Actions.** The production frontend build and **6 desktop/mobile browser tests** passed locally. The synthetic benchmark ran, and search → inspect → adjust → submit was also verified manually in the in-app browser. These checks do not establish real address accuracy. The saved synthetic report is `reports/benchmark-synthetic.json`.
 
 ## Repository layout
 
