@@ -1,0 +1,8 @@
+[
+  {"id":"demo-1","name":"Demo Palm Market","area":"ikeja","lat":6.601,"lon":3.351,"category":"market"},
+  {"id":"demo-2","name":"Demo Unity Filling Station","area":"ikeja","lat":6.612,"lon":3.343,"category":"fuel"},
+  {"id":"demo-3","name":"Demo Unity Filling Station","area":"yaba","lat":6.513,"lon":3.371,"category":"fuel"},
+  {"id":"demo-4","name":"Demo Lagoon Library","area":"victoria island","lat":6.429,"lon":3.421,"category":"library"},
+  {"id":"demo-5","name":"Demo Orchid School","area":"lekki","lat":6.447,"lon":3.471,"category":"school"},
+  {"id":"demo-6","name":"Demo Cedar Clinic","area":"surulere","lat":6.501,"lon":3.351,"category":"clinic"}
+]

@@ -1,0 +1,14 @@
+.venv/
+__pycache__/
+.pytest_cache/
+node_modules/
+dist/
+.env
+*.db
+*.db-*
+data/private/
+data/downloads/
+reports/local/
+*.docx
+playwright-report/
+test-results/

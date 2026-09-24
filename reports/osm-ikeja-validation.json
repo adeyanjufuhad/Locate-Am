@@ -1,0 +1,18 @@
+{
+  "source": "osm",
+  "dataset_version": "2026-09-01T00:00:00Z",
+  "sha256": "c74910929982c2a7d9a43cb128d2ce3fd46d0cadeb55e3b8984e000328cc169b",
+  "input_records": 708,
+  "usable_records": 704,
+  "rejected_records": 4,
+  "inserted_places": 0,
+  "updated_sources": 0,
+  "merged_sources": 0,
+  "dry_run": true,
+  "bounds": [
+    6.3,
+    2.7,
+    6.8,
+    4.0
+  ]
+}

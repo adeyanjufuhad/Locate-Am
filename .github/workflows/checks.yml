@@ -1,0 +1,35 @@
+name: Checks
+on: [push, pull_request]
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgis/postgis:16-3.4
+        env:
+          POSTGRES_USER: locateam
+          POSTGRES_PASSWORD: locateam
+          POSTGRES_DB: locateam_test
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U locateam -d locateam_test"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      TEST_DATABASE_URL: postgresql://locateam:locateam@localhost:5432/locateam_test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - uses: actions/setup-node@v4
+        with: {node-version: '22'}
+      - run: pip install -r requirements.txt
+      - run: python -m pytest -q
+      - run: npm ci && npm run build && npx playwright install --with-deps chromium
+        working-directory: web
+      - run: |
+          uvicorn api.main:app --host 127.0.0.1 --port 8000 --no-proxy-headers &
+          cd web && npm run dev &
+          for i in $(seq 1 30); do curl -fsS http://127.0.0.1:8000/health && curl -fsS http://127.0.0.1:5173 && break; sleep 1; done
+      - run: npm run test:e2e
+        working-directory: web
+      - run: python -m scripts.benchmark

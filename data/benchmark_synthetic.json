@@ -1,0 +1,12 @@
+{
+  "kind": "synthetic",
+  "description": "Fictional POIs and invented coordinates for software testing only. NOT geographic ground truth or accuracy evidence.",
+  "rows": [
+    {"address":"Demo Palm Market, Ikeja","lat":6.601,"lon":3.351},
+    {"address":"opp. Demo Palm Market, Ikeja","lat":6.602,"lon":3.351},
+    {"address":"nr Demo Lagoon Library, VI","lat":6.429,"lon":3.422},
+    {"address":"behind Demo Orchid School Lekki phase 1","lat":6.448,"lon":3.471},
+    {"address":"Demo Unity Filling Station","lat":6.612,"lon":3.343},
+    {"address":"Unknown Purple Observatory, Yaba","lat":6.511,"lon":3.371}
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "kind": "synthetic",
+  "addresses": 6,
+  "returned_references": 4,
+  "within_m_all_addresses": {
+    "100": 0.16666666666666666,
+    "200": 0.6666666666666666,
+    "500": 0.6666666666666666
+  },
+  "median_error_m_returned_references": 110.84544800676544,
+  "result_share": 0.6666666666666666,
+  "candidate_share": 0.8333333333333334,
+  "requires_pin_share": 0.8333333333333334,
+  "real_world_accuracy": "unmeasured",
+  "denominator_note": "Threshold and share denominators include all addresses; median includes returned references only."
+}
