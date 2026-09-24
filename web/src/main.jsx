@@ -1,21 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvents } from 'react-leaflet';
-import L from 'leaflet';
-import 'leaflet/dist/leaflet.css';
+import GoogleMapView from './components/GoogleMapView.jsx';
 import './styles.css';
 
 const API = import.meta.env.VITE_API_URL || '/api';
-const DEFAULT_CENTER = [6.55, 3.4];
-
-const createPinIcon = (label, active = false) =>
-  L.divIcon({
-    className: 'map-icon-wrap',
-    html: `<div class="map-pin ${active ? 'pin-active' : ''}"><span>${label}</span></div>`,
-    iconSize: [32, 32],
-    iconAnchor: [16, 32],
-    popupAnchor: [0, -32],
-  });
+const DEFAULT_CENTER = [6.5244, 3.3792];
 
 async function apiRequest(path, body) {
   const response = await fetch(API + path, {
@@ -30,22 +19,6 @@ async function apiRequest(path, body) {
   return data;
 }
 
-function MapController({ pin, onMove, active }) {
-  const map = useMap();
-  useEffect(() => {
-    if (pin && typeof pin[0] === 'number' && typeof pin[1] === 'number') {
-      map.setView(pin, 15, { animate: true });
-    }
-  }, [pin?.[0], pin?.[1], map]);
-
-  useMapEvents({
-    click(e) {
-      if (active) onMove([e.latlng.lat, e.latlng.lng]);
-    },
-  });
-  return null;
-}
-
 function App() {
   const [address, setAddress] = useState('');
   const [query, setQuery] = useState('');
@@ -58,7 +31,6 @@ function App() {
   const [saved, setSaved] = useState(false);
   const [consent, setConsent] = useState(false);
   const [adjusted, setAdjusted] = useState(false);
-  const [tilesFailed, setTilesFailed] = useState(false);
 
   const searchCounter = useRef(0);
   const dirty = Boolean(result && address.trim() !== query);
@@ -299,71 +271,19 @@ function App() {
 
           {/* Right Column: Cartographic Instrument & Pin Confirmation */}
           <section className="panel map-panel" aria-label="Map and confirmation">
-            <div className="map-header">
-              <div className="map-title">
-                <span className="live-dot" />
-                <span>Lagos Spatial Reference</span>
-              </div>
-              <span className="map-coords-badge">BBOX 6.3°N–6.8°N · 2.7°E–4.0°E</span>
-            </div>
-
-            <div className="map-container">
-              <MapContainer
-                center={DEFAULT_CENTER}
-                zoom={11}
-                minZoom={9}
-                maxBounds={[[6.3, 2.7], [6.8, 4.0]]}
-                scrollWheelZoom={false}
-              >
-                <TileLayer
-                  attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                  url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
-                  eventHandlers={{ tileerror: () => setTilesFailed(true) }}
-                />
-                <MapController
-                  pin={pin}
-                  active={Boolean(result && !saved && !sending && !dirty)}
-                  onMove={movePin}
-                />
-                {result?.candidates.map((c, idx) => (
-                  <Marker
-                    key={c.id}
-                    position={[c.lat, c.lon]}
-                    icon={createPinIcon(idx + 1)}
-                  >
-                    <Popup>
-                      <strong>{c.name}</strong>
-                      <br />
-                      Approximate landmark reference
-                    </Popup>
-                  </Marker>
-                ))}
-                {pin && (
-                  <Marker
-                    position={pin}
-                    draggable={Boolean(!saved && !sending && !dirty)}
-                    icon={createPinIcon('✚', true)}
-                    eventHandlers={{
-                      dragend: (e) => {
-                        const latlng = e.target.getLatLng();
-                        movePin([latlng.lat, latlng.lng]);
-                      },
-                    }}
-                  >
-                    <Popup>Your proposed destination pin (pending moderation review)</Popup>
-                  </Marker>
-                )}
-              </MapContainer>
-              <div className="map-floating-hint">
-                {result ? 'Drag the orange marker ✚ or click map to set pin' : 'Enter an address to explore landmarks'}
-              </div>
-            </div>
-
-            {tilesFailed && (
-              <p className="notice warning">
-                Map tiles could not be fetched. You can still inspect candidates and enter numeric coordinates below.
-              </p>
-            )}
+            <GoogleMapView
+              pin={pin}
+              onMove={movePin}
+              candidates={result?.candidates}
+              active={Boolean(result && !saved && !sending && !dirty)}
+              result={result}
+              selectedId={selected}
+              onSelectCandidate={(cand) => {
+                setSelected(cand.id);
+                setPin([cand.lat, cand.lon]);
+                setAdjusted(false);
+              }}
+            />
 
             <div className="confirmation-section">
               <div className="step-tag">
@@ -385,7 +305,7 @@ function App() {
               ) : (
                 <div className="confirmation-active">
                   <h3>Where is the actual destination?</h3>
-                  <p>The landmark is an approximate reference. Adjust the orange pin or enter exact coordinates.</p>
+                  <p>The landmark is an approximate reference. Adjust the green pin or enter exact coordinates.</p>
 
                   <div className="coords-row">
                     <div className="coords-field">
@@ -460,7 +380,7 @@ function App() {
             <span>Lagos-First Nigerian Landmark Engine</span>
           </div>
           <div className="footer-meta">
-            {result?.data_mode === 'postgres' ? 'OpenStreetMap Data · Neon PostGIS' : 'Fictional Demo Dataset'} · Real-World Accuracy Uncalibrated
+            {result?.data_mode === 'postgres' ? 'Landmark data © OpenStreetMap contributors · Neon PostGIS' : 'Fictional Demo Dataset'} · Real-World Accuracy Uncalibrated
           </div>
         </footer>
       </main>
